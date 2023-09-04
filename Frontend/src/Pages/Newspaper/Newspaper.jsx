@@ -24,7 +24,10 @@ const Gallery = () => {
         );
         setNews(newsData[0]); // Assuming you want to slice the filtered data
 
-        const new_1Data = response.data.filter(
+        let newspapers = [...response.data]
+        newspapers = newspapers.reverse()
+
+        const new_1Data = newspapers.filter(
           (item) =>
             item.status === "Publish" && item.page_type === "Newspaper_1"
         );
@@ -104,11 +107,10 @@ const Gallery = () => {
             {Array.from({ length: Pages }).map((_, index) => (
               <button
                 key={index + 1}
-                className={`w-10 h-10 ${
-                  currentPage === index + 1
+                className={`w-10 h-10 ${currentPage === index + 1
                     ? "bg-blue-500 text-white"
                     : "text-gray-500 hover:text-blue-600"
-                } p-4 inline-flex items-center text-sm font-medium rounded-full`}
+                  } p-4 inline-flex items-center text-sm font-medium rounded-full`}
                 onClick={() => setCurrentPage(index + 1)}
               >
                 {index + 1}

@@ -23,7 +23,10 @@ const Gallery = () => {
         );
         setGallery(galleryData[0]); // Assuming you want to slice the filtered data
 
-        const gallery_1Data = response.data.filter(
+        let newGallery = [...response.data]
+        newGallery = newGallery.reverse()
+
+        const gallery_1Data = newGallery.filter(
           (item) => item.status === "Publish" && item.page_type === "Gallery_1"
         );
 
@@ -46,6 +49,8 @@ const Gallery = () => {
       console.error("Error fetching data:", error);
     }
   };
+
+
 
   useEffect(() => {
     // Axios GET request to fetch data
@@ -70,7 +75,7 @@ const Gallery = () => {
             {gallery_1.map((item, index) => (
               <div
                 key={index}
-                className="xl:w-1/4 md:w-2/5 xl:h-[350px] relative w-full h-80"
+                className="xl:w-1/4 md:w-2/5 xl:h-[300px] relative w-full h-80"
               >
                 <ModalImage
                   small={item.bannerimage}
@@ -94,8 +99,8 @@ const Gallery = () => {
             <button
               key={index + 1}
               className={`w-10 h-10 ${currentPage === index + 1
-                  ? "bg-blue-500 text-white"
-                  : "text-gray-500 hover:text-blue-600"
+                ? "bg-blue-500 text-white"
+                : "text-gray-500 hover:text-blue-600"
                 } p-4 inline-flex items-center text-sm font-medium rounded-full`}
               onClick={() => setCurrentPage(index + 1)}
             >
