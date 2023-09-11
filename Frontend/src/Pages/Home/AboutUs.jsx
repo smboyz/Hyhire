@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 const AboutUs = () => {
   const [about_1, setSlider_1] = useState([]);
   const [about_2, setSlider_2] = useState([]);
+  const [parentId, setParentId] = useState(null);
+  const [navigation, setNavigation] = useState([]);
 
   const AboutData = async () => {
     try {
@@ -24,6 +26,22 @@ const AboutUs = () => {
         );
         setSlider_2(about_2Data);
       }
+      const navigationResponse = await axios.get(
+        "http://127.0.0.1:8000/api/navigations/",
+        {
+          params: {
+            parent_id: parentId,      // Set the parentId as a parameter
+            page_type: "Group",       // Filter by page_type        
+          }
+        }
+      );
+
+      if (navigationResponse.data) {
+        const navigationData = navigationResponse.data.filter(
+          (item) => item.status === "Publish"
+        );
+        setNavigation(navigationData);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -32,7 +50,7 @@ const AboutUs = () => {
   useEffect(() => {
     // Axios GET request to fetch data
     AboutData();
-  }, []);
+  }, [parentId]);
 
   //   console.log(about_1, about_2);
 
@@ -56,12 +74,14 @@ const AboutUs = () => {
             </div>
 
             <div className="pt-10">
-              <Link to="/AboutCompany">
-                <button className="bg-primaryOrange text-white px-6 py-2 tracking-wider font-semibold transition duration-300 hover:bg-primary hover:-translate-y-2 rounded-lg">
-                  {" "}
-                  ABOUT US
-                </button>
-              </Link>
+              {navigation[navigation?.findIndex(item => item?.id === 48)] && (
+                <Link to="/AboutCompany">
+                  <button className="bg-primaryOrange text-white px-6 py-2 tracking-wider font-semibold transition duration-300 hover:bg-primary hover:-translate-y-2 rounded-lg">
+                    {" "}
+                    ABOUT US
+                  </button>
+                </Link>
+              )}
             </div>
           </div>
         ))}

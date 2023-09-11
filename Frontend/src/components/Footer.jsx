@@ -6,26 +6,47 @@ import { Link } from "react-router-dom";
 
 
 const Footer = () => {
-    const [data, setData] = useState()
+    const [data, setData] = useState();
+    const [parentId, setParentId] = useState(null);
+    const [navigation, setNavigation] = useState([]);
 
-    const headerData = async () =>{
+    const headerData = async () => {
         try {
             const response = await axios.get('http://127.0.0.1:8000/api/globals/');
             // Handle the response data here
             response.data && setData(response.data[0]);
+
+            const navigationResponse = await axios.get(
+                "http://127.0.0.1:8000/api/navigations/",
+                {
+                    params: {
+                        parent_id: parentId,      // Set the parentId as a parameter
+                        page_type: "Group",       // Filter by page_type        
+                    }
+                }
+            );
+
+            if (navigationResponse.data) {
+                const navigationData = navigationResponse.data.filter(
+                    (item) => item.status === "Publish"
+                );
+                setNavigation(navigationData);
+            }
+
         } catch (error) {
             console.error("Error fetching data:", error);
         }
-    
+
     }
-    
+
+
     useEffect(() => {
         // Axios GET request to fetch data
         headerData();
-    
-    }, []);
+
+    }, [parentId]);
     // console.log(data);
-    
+
     return (
         <>
             <div className='bg-secondaryDarkBlue py-8'>
@@ -45,67 +66,77 @@ const Footer = () => {
 
                         {/* <div className='flex flex-col xl:flex-row md:flex-row md:justify-between'> */}
 
-                            {/* -------- contact area -------- */}
-                            <div className='flex flex-col mb-6 xl:w-1/5'>
-                                <div className='text-white text-xl font-semibold border-b border-primaryYellowBrand pb-2'>
-                                    <p>CONTACT</p>
+                        {/* -------- contact area -------- */}
+                        <div className='flex flex-col mb-6 xl:w-1/5'>
+                            <div className='text-white text-xl font-semibold border-b border-primaryYellowBrand pb-2'>
+                                <p>CONTACT</p>
+                            </div>
+                            <div className='pt-2'>
+                                <div className='flex gap-2 items-center clear-left text-white font-thin'>
+                                    <i class="fa-solid fa-location-dot text-primaryYellowBrand text-lg"></i>
+                                    {data && <p>{data.SiteAddress}</p>}
                                 </div>
-                                <div className='pt-2'>
-                                    <div className='flex gap-2 items-center clear-left text-white font-thin'>
-                                        <i class="fa-solid fa-location-dot text-primaryYellowBrand text-lg"></i>
-                                        {data && <p>{data.SiteAddress}</p>}
-                                    </div>
-                                    <div className='flex gap-2 items-center text-white font-thin'>
-                                        <i class="fa-regular fa-paper-plane  text-primaryYellowBrand text-lg"></i>
-                                        {data && <p>{data.SiteBox}</p>}
-                                    </div>
-                                    <div className='flex gap-2 items-center text-white font-thin'>
-                                        <i class="fa-solid fa-phone  text-primaryYellowBrand text-lg"></i>
-                                        {data && <p>{data.SiteContact}</p>}
-                                    </div>
-                                    <div className='flex gap-2 items-center text-white font-thin'>
-                                        <i class="fa-solid fa-fax  text-primaryYellowBrand text-lg"></i>
-                                        {data && <p>{data.Sitefax}</p>}
-                                    </div>
-                                    <div className='flex gap-2 items-center text-white font-thin'>
-                                        <i class="fa-regular fa-envelope  text-primaryYellowBrand text-lg"></i>
-                                        {data && <p>{data.SiteEmail}</p>}
-                                    </div>
+                                <div className='flex gap-2 items-center text-white font-thin'>
+                                    <i class="fa-regular fa-paper-plane  text-primaryYellowBrand text-lg"></i>
+                                    {data && <p>{data.SiteBox}</p>}
+                                </div>
+                                <div className='flex gap-2 items-center text-white font-thin'>
+                                    <i class="fa-solid fa-phone  text-primaryYellowBrand text-lg"></i>
+                                    {data && <p>{data.SiteContact}</p>}
+                                </div>
+                                <div className='flex gap-2 items-center text-white font-thin'>
+                                    <i class="fa-solid fa-fax  text-primaryYellowBrand text-lg"></i>
+                                    {data && <p>{data.Sitefax}</p>}
+                                </div>
+                                <div className='flex gap-2 items-center text-white font-thin'>
+                                    <i class="fa-regular fa-envelope  text-primaryYellowBrand text-lg"></i>
+                                    {data && <p>{data.SiteEmail}</p>}
                                 </div>
                             </div>
+                        </div>
 
-                            {/* -------- quick links -------- */}
-                            <div className='flex flex-col xl:w-1/5'>
-                                <div className='text-white text-xl font-semibold border-b border-primaryYellowBrand pb-2'>
-                                    <p>QUICK LINKS</p>
+                        {/* -------- quick links -------- */}
+                        <div className='flex flex-col xl:w-1/5'>
+                            <div className='text-white text-xl font-semibold border-b border-primaryYellowBrand pb-2'>
+                                <p>QUICK LINKS</p>
+                            </div>
+                            <div className='pt-2'>
+                                <div className='flex gap-2 items-center clear-left text-white font-thin'>
+                                    <i class="fa-solid fa-arrow-right-long text-primaryYellowBrand text-lg"></i>
+                                    <Link to="/"> Home</Link>
                                 </div>
-                                <div className='pt-2'>
-                                    <div className='flex gap-2 items-center clear-left text-white font-thin'>
-                                        <i class="fa-solid fa-arrow-right-long text-primaryYellowBrand text-lg"></i>
-                                        <Link to="/"> Home</Link>
-                                    </div>
+                                {navigation[navigation?.findIndex(item => item?.id === 48)] && (
                                     <div className='flex gap-2 items-center clear-left text-white font-thin'>
                                         <i class="fa-solid fa-arrow-right-long text-primaryYellowBrand text-lg"></i>
                                         <Link to='/aboutcompany'>About Us</Link>
                                     </div>
+                                )}
+                                {navigation[navigation?.findIndex(item => item?.id === 84)] && (
                                     <div className='flex gap-2 items-center clear-left text-white font-thin'>
                                         <i class="fa-solid fa-arrow-right-long text-primaryYellowBrand text-lg"></i>
                                         <Link to='/demandletter'>Demand Letter</Link>
                                     </div>
+                                )}
+                                {navigation[navigation?.findIndex(item => item?.id === 96)] && (
                                     <div className='flex gap-2 items-center clear-left text-white font-thin'>
                                         <i class="fa-solid fa-arrow-right-long text-primaryYellowBrand text-lg"></i>
                                         <Link to='/advertisement'>Newspaper Vacancy</Link>
                                     </div>
+                                )}
+                                {navigation[navigation?.findIndex(item => item?.id === 58)] && (
                                     <div className='flex gap-2 items-center clear-left text-white font-thin'>
                                         <i class="fa-solid fa-arrow-right-long text-primaryYellowBrand text-lg"></i>
                                         <Link to='/organizationalchart'>Organization Chart</Link>
                                     </div>
+                                )}
+                                {navigation[navigation?.findIndex(item => item?.id === 110)] && (
                                     <div className='flex gap-2 items-center clear-left text-white font-thin'>
                                         <i class="fa-solid fa-arrow-right-long text-primaryYellowBrand text-lg"></i>
                                         <Link to='/contact'>Contact Us</Link>
                                     </div>
-                                </div>
+                                )}
                             </div>
+                        </div>
 
                         {/* </div> */}
 
